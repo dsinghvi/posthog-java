@@ -1,0 +1,135 @@
+service:
+  auth: false
+  base-path: ""
+  endpoints:
+    evaluateLocally:
+      auth: true
+      path: /api/feature_flag/local_evaluation
+      method: GET
+      request:
+        name: EvaluateLocalFeatureFlagsRequest
+        query-parameters:
+          token: string
+          send_cohorts:
+            type: string
+            docs: | 
+              The value of this string can be anything. 
+              The query parameter just needs to be specified to load cohorts.
+      response: EvaluateLocalFeatureFlagsResponse
+
+    decide:
+      path: /decide
+      method: POST
+      request:
+        name: DecideFeatureFlagsRequest
+        query-parameters:
+          v:
+            type: string
+            docs: Version of the endpoint. This should be hardcoded to 3.
+        body:
+          properties:
+            distinct_id: string
+            groups: map<string, unknown>
+            person_properties:  map<string, unknown>
+            group_properties:  map<string, unknown>
+      response: DecideFeatureFlagsResponse
+
+types:
+  EvaluateLocalFeatureFlagsResponse:
+    properties:
+      flags: optional<list<FeatureFlag>>
+      group_type_mapping:
+        type: optional<map<string, string>>
+        docs: This is a map from group type index to group type
+      cohorts:
+        type: optional<map<string, GroupPropertyFilter>>
+        docs: This is a map from a Cohort's ID to its properties
+
+  DecideFeatureFlagsResponse:
+    properties:
+      featureFlags: map<string, FeatureFlagValue>
+
+  FeatureFlagValue:
+    discriminated: false
+    union:
+      - type: boolean
+        docs: Whether the feature flag is enabled or not
+      - type: string
+        docs: The variant of the feature flag that is enabled
+
+  FeatureFlag:
+    properties:
+      id: integer
+      name: string
+      key: string
+      filters: map<string, unknown>
+      deleted: boolean
+      active: boolean
+      ensure_experience_continuity: boolean
+
+  Filter:
+    properties:
+      aggregation_group_type_index: optional<integer>
+#      groups: list<FilterGroup>
+
+  GroupPropertyFilter:
+    union:
+      AND: AndPropertyFilter
+      OR:  OrPropertyFilter
+
+  AndPropertyFilter:
+    properties:
+      values: list<PropertyFilter>
+
+  OrPropertyFilter:
+    properties:
+      values: list<PropertyFilter>
+
+  PropertyFilter:
+    discriminated: false
+    union:
+      - SinglePropertyFilter
+      - GroupPropertyFilter
+
+  SinglePropertyFilter:
+    properties:
+      key:
+        type: string
+        docs: Name of property
+      value:
+        type: PropertyValue
+        docs: Value of property
+      operator:
+        type: optional<PropertyOperator>
+        docs: Defaults to exact
+      type:
+        type: PropertyType
+
+  PropertyType:
+    enum:
+      - person
+      - cohort
+
+  PropertyValue:
+    discriminated: false
+    union:
+      - list<string>
+      - string
+      - list<double>
+      - double
+
+  PropertyOperator:
+    enum:
+      - exact
+      - is_not
+      - is_set
+      - icontains
+      - not_icontains
+      - regex
+      - not_regex
+      - gt
+      - gte
+      - lt
+      - lte
+      - is_date_before
+      - is_date_after

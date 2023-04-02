@@ -1,0 +1,108 @@
+service:
+  auth: false
+  base-path: ""
+  endpoints:
+    batchEvents:
+      path: /batch
+      method: POST
+      request:
+        name: BatchEventRequest
+        body:
+          properties:
+            api_key: string
+            batch: list<Event>
+
+types:
+  Event:
+    discriminant: event
+    union:
+      $create_alias:
+        name: alias
+        type: AliasEvent
+      $capture:
+        name: capture
+        type: CaptureEvent
+      $identify:
+        name: identity
+        type: IdentifyEvent
+      $pageview:
+        name: pageview
+        type: PageViewEvent
+      $set:
+        name: set
+        type: SetEvent
+      $set_once:
+        name: set_once
+        type: SetOnceEvent
+      $groupidentify:
+        name: group_identify
+        type: GroupIdentifyEvent
+
+  BaseEvent:
+    properties:
+      timestamp: optional<datetime>
+      distinct_id: string
+      context: map<string, unknown>
+
+  AliasEvent:
+    extends: BaseEvent
+    properties:
+      properties: AliasEventProperties
+  AliasEventProperties:
+    properties:
+      distinct_id: string
+      alias: string
+
+  CaptureEvent:
+    extends: BaseEvent
+    properties:
+      properties: map<string, unknown>
+      uuid: uuid
+
+  IdentifyEvent:
+    extends: BaseEvent
+    properties:
+      $set:
+        name: properties
+        type: map<string, unknown>
+  IdentifyEventProperties:
+    properties: {}
+
+  PageViewEvent:
+    extends: BaseEvent
+    properties:
+      properties: map<string, unknown>
+      uuid: uuid
+
+  SetEvent:
+    extends: BaseEvent
+    properties:
+      $set:
+        type: map<string, unknown>
+        name: properties
+      uuid: uuid
+
+  SetOnceEvent:
+    extends: BaseEvent
+    properties:
+      $set_once:
+        type: map<string, unknown>
+        name: properties
+      uuid: uuid
+
+  GroupIdentifyEvent:
+    extends: BaseEvent
+    properties:
+      properties: GroupIdentifyEventProperties
+      uuid: uuid
+  GroupIdentifyEventProperties:
+    properties:
+      $group_type:
+        name: group_type
+        type: string
+      $group_key:
+        name: group_key
+        type: string
+      $group_set:
+        name: properties
+        type: map<string, unknown>

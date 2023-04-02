@@ -4,3 +4,6 @@
 */artifactid
 */target/
 .vscode/
+*.iml
+.idea/
+**/dependency-reduced-pom.xml

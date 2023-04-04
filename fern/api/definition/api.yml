@@ -1,0 +1,8 @@
+name: api
+display-name: Posthog API
+default-environment: Cloud
+auth: bearer
+environments:
+  Cloud: https://app.posthog.com
+error-discrimination:
+  strategy: status-code

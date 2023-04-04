@@ -29,9 +29,9 @@ service:
         body:
           properties:
             distinct_id: string
-            groups: map<string, unknown>
-            person_properties:  map<string, unknown>
-            group_properties:  map<string, unknown>
+            groups: map<string, string>
+            person_properties:  optional<map<string, unknown>>
+            group_properties:  optional<map<string, unknown>>
       response: DecideFeatureFlagsResponse
 
 types:
@@ -115,7 +115,6 @@ types:
     union:
       - list<string>
       - string
-      - list<double>
       - double
 
   PropertyOperator:

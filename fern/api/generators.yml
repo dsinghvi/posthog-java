@@ -1,9 +1,9 @@
-default-group: local
+default-group: clients
 groups:
   clients:
     generators:
       - name: fernapi/fern-java-sdk
-        version: 0.1.0
+        version: 0.1.0-1-gdb5c636
         output:
           location: maven
           url: maven.buildwithfern.com

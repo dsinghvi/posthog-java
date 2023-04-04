@@ -14,32 +14,19 @@ service:
 
 types:
   Event:
-    discriminant: event
+    discriminated: false
     union:
-      $create_alias:
-        name: alias
-        type: AliasEvent
-      $capture:
-        name: capture
-        type: CaptureEvent
-      $identify:
-        name: identity
-        type: IdentifyEvent
-      $pageview:
-        name: pageview
-        type: PageViewEvent
-      $set:
-        name: set
-        type: SetEvent
-      $set_once:
-        name: set_once
-        type: SetOnceEvent
-      $groupidentify:
-        name: group_identify
-        type: GroupIdentifyEvent
+      - AliasEvent
+      - CaptureEvent
+      - IdentifyEvent
+      - PageViewEvent
+      - SetEvent
+      - SetOnceEvent
+      - GroupIdentifyEvent
 
   BaseEvent:
     properties:
+      event: string
       timestamp: optional<datetime>
       distinct_id: string
       context: map<string, unknown>

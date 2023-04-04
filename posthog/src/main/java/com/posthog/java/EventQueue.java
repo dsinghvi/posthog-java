@@ -94,7 +94,7 @@ public final class EventQueue {
         private List<Event> getBatch() {
             List<Event> events = new ArrayList<>();
             long start = System.currentTimeMillis();
-
+            int batchSizeInBytes = 0;
             while (events.size() < flushAt) {
                 long elapsed = System.currentTimeMillis() - start;
                 if (elapsed > flushIntervalInMillis) {
@@ -107,7 +107,8 @@ public final class EventQueue {
                         continue;
                     }
                     events.add(event);
-                    if (events.size() > BATCH_SIZE_LIMIT_IN_BYTES) {
+                    batchSizeInBytes += sizeInBytes;
+                    if (batchSizeInBytes > BATCH_SIZE_LIMIT_IN_BYTES) {
                         break;
                     }
                 } catch (InterruptedException | JsonProcessingException e) {

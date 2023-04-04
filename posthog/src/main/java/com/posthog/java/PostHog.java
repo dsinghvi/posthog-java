@@ -241,10 +241,6 @@ public class PostHog {
         queue.enqueue(event);
     }
 
-    // Feature Flags
-
-
-
     private DecideFeatureFlagsResponse getDecide(
             String distinctId,
             Map<String, String> groups,
